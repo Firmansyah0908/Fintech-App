@@ -1,0 +1,673 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary: #10b981;
+    --primary-light: #d1fae5;
+    --primary-dark: #059669;
+    --bg-main: #f9fafb;
+    --bg-card: #ffffff;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --red: #ef4444;
+    --red-light: #fee2e2;
+    --orange: #f59e0b;
+    --orange-light: #fef3c7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background-color: var(--bg-main); color: var(--text-main); font-size: 14px; }
+
+/* Layout Grid/Flex */
+.app-layout { display: flex; height: 100vh; overflow: hidden; }
+.sidebar { width: 260px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; flex-shrink:0; }
+.main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+.header { 
+    height: 76px; 
+    background: #fff; 
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    justify-content: flex-end; 
+    align-items: center; 
+    padding: 18px 48px; /* Padding atas-bawah 18px, kiri-kanan 48px */
+    position: sticky; 
+    top: 0; 
+    z-index: 10; 
+}
+
+.content-body { padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* Sidebar Elements */
+.logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding: 0 10px; }
+.logo-icon { background: var(--primary); color: #fff; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; }
+.logo h2 { font-size: 24px; letter-spacing: -0.5px; color: var(--text-main); font-weight: 700;}
+
+.workspace-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 40px; cursor: pointer; background: #fff;}
+.ws-icon { background: var(--bg-main); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+.ws-info h4 { font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;}
+.ws-info p { font-size: 12px; color: var(--text-muted); }
+.ws-arrow { margin-left: auto; color: var(--text-muted); display: flex; align-items: center;}
+
+.menu-label { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; padding: 0 10px;}
+.menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.menu a { text-decoration: none; color: var(--text-muted); padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 15px; transition: 0.2s; }
+.menu a svg { color: var(--text-muted); }
+.menu a:hover { background: var(--bg-main); color: var(--text-main); }
+.menu a.active { background: var(--primary); color: #fff; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.06);}
+.menu a.active svg { color: #fff; }
+
+/* Menyesuaikan warna badge notifikasi di sidebar menjadi merah muda (seperti gambar referensi) */
+.badge { background: var(--red-light); color: var(--red); padding: 2px 8px; border-radius: 20px; font-size: 11px; margin-left: auto; font-weight: 700; }
+.menu a.active .badge { background: #fff; color: var(--red); }
+
+/* Header Elements */
+.header-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 32px; /* Diperbesar agar jarak tanggal, lonceng, dan profil lebih lega */
+}
+
+.date { 
+    color: var(--text-muted); 
+    font-size: 13px; 
+    font-weight: 500; 
+}
+
+.notification { 
+    color: var(--text-muted); 
+    display: flex;
+    align-items: center;
+    cursor: pointer; 
+}
+
+.user-profile { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    cursor: pointer; 
+    border-left: 1px solid var(--border); 
+    padding-left: 32px; /* Jarak dari garis vertikal ke Avatar diperbesar */
+    height: 40px; 
+}
+
+.avatar { 
+    background: var(--primary-light); 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: 600; 
+    color: var(--primary-dark); 
+    font-size: 13px; 
+}
+
+.user-info h4 { 
+    font-size: 13px; 
+    color: var(--text-main); 
+    font-weight: 600; 
+    margin-bottom: 2px; 
+}
+
+.user-info p { 
+    font-size: 11px; 
+    color: var(--text-muted); 
+}
+
+/* Common Utilities */
+.breadcrumb { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; }
+.page-header h1 { font-size: 24px; color: var(--text-main); }
+.subtitle { color: var(--text-muted); margin-bottom: 30px; }
+.btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 14px; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.text-green { color: var(--primary); } .bg-green { background: var(--primary); }
+.text-red { color: var(--red); } .bg-red { background: var(--red); }
+.text-orange { color: var(--orange); } .bg-orange { background: var(--orange); }
+.bg-light-green { background: var(--primary-light); }
+.bg-light-green-alt { background: #6ee7b7; }
+.bg-light-orange { background: var(--orange-light); }
+.bg-light-gray { background: #f3f4f6; }
+.text-muted { color: var(--text-muted); }
+.font-bold { font-weight: 600; }
+.float-right { float: right; }
+.badge-trend { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.badge-trend.positive { background: var(--primary-light); color: var(--primary-dark); }
+.badge-trend.negative { background: var(--red-light); color: var(--red); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+
+
+/* Utilitas Tambahan untuk Lists Dashboard */
+.bg-light-yellow { background: #fef3c7; }
+.text-yellow-dark { color: #d97706; }
+.text-main { color: var(--text-main); }
+.font-bold { font-weight: 700; }
+
+.card-list-wrapper {
+    border-radius: 12px;
+    padding: 24px;
+}
+
+/* Penyesuaian List Item agar lebih mirip desain */
+.list-item { 
+    display: flex; 
+    align-items: center; 
+    padding: 16px 0; 
+    border-bottom: 1px solid var(--border); 
+}
+.list-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.item-icon { 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-right: 16px; 
+}
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.item-info strong { 
+    font-size: 15px; 
+    color: var(--text-main); 
+}
+.item-info span { 
+    font-size: 13px; 
+}
+.item-value { 
+    margin-left: auto; 
+    font-size: 15px; 
+}
+
+/* Custom Dropdown Bulan Styling */
+/* Custom Dropdown Bulan Styling */
+.custom-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #d1d5db; /* Border abu-abu tegas */
+    border-radius: 8px; 
+    padding: 6px 36px 6px 36px; /* Ruang untuk ikon kiri dan kanan */
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    height: 38px;
+    transition: all 0.2s ease;
+}
+
+.custom-select-wrapper:hover {
+    border-color: #9ca3af;
+}
+
+.custom-select-wrapper:focus-within {
+    border-color: #3b82f6; 
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+    padding: 0;
+    margin: 0;
+    outline: none;
+    cursor: pointer;
+    z-index: 2;
+    width: 100%;
+}
+
+.calendar-icon {
+    position: absolute;
+    left: 12px;
+    z-index: 1;
+    color: var(--text-muted);
+}
+
+.chevron-icon {
+    position: absolute;
+    right: 12px;
+    z-index: 1;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+
+/* Dashboard specifics */
+.dashboard-cards { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 24px; 
+    margin-bottom: 24px; 
+}
+
+.summary-card { 
+    height: 171px; 
+    padding: 24px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+}
+
+.summary-card .card-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start;
+    color: var(--text-muted); 
+    font-size: 14px; 
+    font-weight: 500;
+}
+
+
+
+.icon-box { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0;
+}
+
+.summary-card h2 { 
+    font-size: 28px; 
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+}
+
+.summary-card .card-bottom { 
+    font-size: 13px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.badge-trend { 
+    display: inline-flex; 
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px; 
+    border-radius: 100px; 
+    font-size: 12px; 
+    font-weight: 600; 
+}
+
+.badge-trend.positive { background: var(--primary-light); color: var(--primary-dark); }
+.badge-trend.negative { background: var(--red-light); color: var(--red); }
+
+.charts-grid { 
+    display: grid; 
+    grid-template-columns: 1.2fr 1fr; /* Membagi Grafik Arus Kas lebih lebar dari Tren Saldo */
+    gap: 24px; 
+    margin-bottom: 24px; 
+}
+
+.bottom-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; /* Membagi Donut Chart dan List sejajar */
+    gap: 24px; 
+}
+
+.card-header-flex { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-bottom: 15px; 
+}
+
+.card-header-flex h3 { 
+    font-size: 16px; 
+    margin-bottom: 5px; 
+}
+
+.chart-legend { 
+    font-size: 12px; 
+    margin-bottom: 20px; 
+}
+
+/* Flexbox Bar Chart */
+.bar-chart-container { 
+    display: flex; 
+    height: 220px; 
+    position: relative; 
+    padding-left: 0; 
+    margin-top: 10px;
+}
+
+.y-axis { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    bottom: 30px; /* Sisakan ruang 30px di bawah untuk teks X-axis */
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    z-index: 1; 
+    pointer-events: none; 
+}
+
+.y-axis span {
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #f3f4f6; 
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.y-axis span::before {
+    content: attr(data-val); 
+    position: absolute;
+    top: -15px; 
+    left: 0;
+    background-color: #fff; 
+    padding-right: 4px;
+}
+
+.bar-area { 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: flex-end; 
+    flex: 1; 
+    /* HAPUS border dan padding bawah agar bar benar-benar nempel ke garis "0 jt" */
+    border-bottom: none; 
+    padding-bottom: 0; 
+    height: 190px; 
+    z-index: 2; 
+    position: relative;
+}
+
+.bar-group { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    height: 100%; 
+    justify-content: flex-end; 
+    width: 100%; 
+    position: relative; /* Ditambahkan agar teks label punya patokan koordinat */
+}
+
+.bar-wrapper { 
+    display: flex; 
+    flex-direction: column-reverse; 
+    align-items: center; 
+    height: 100%; 
+    width: 40px; 
+}
+
+.bar { 
+    width: 100%; 
+    border-radius: 0; 
+}
+
+.bar:last-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.x-label { 
+    position: absolute;
+    bottom: -24px; /* Teks dipaksa turun melewati batas bawah grafik */
+    font-size: 12px; 
+    color: var(--text-muted); 
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* SVG Line Chart */
+/* SVG Line Chart */
+.saldo-amount { margin-bottom: 30px; } /* PERBAIKAN: Ubah margin-bottom menjadi 30px agar tidak menabrak grafik */
+.saldo-amount h2 { font-size: 22px; display: inline-block; margin-right: 10px; }
+.line-chart-container { height: 200px; width: 100%; position: relative; }
+
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+/* CSS Conic Donut Chart */
+.donut-container { display: flex; align-items: center; gap: 30px; margin-top: 20px; }
+.donut-wrapper { position: relative; width: 160px; height: 160px; border-radius: 50%; }
+.donut-chart { width: 180px; height: 180px; border-radius: 50%; position: relative; }
+.donut-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 130px; height: 130px; background: #fff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-legend { flex: 1; }
+.donut-legend ul { list-style: none; font-size: 13px; color: var(--text-muted); }
+.donut-legend li { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.donut-legend li:last-child { border-bottom: none; }
+
+/* Lists (Produk & Tagihan) */
+.list-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.item-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 15px; }
+.item-info h4 { font-size: 14px; margin-bottom: 3px; color: var(--text-main); }
+.item-info span { font-size: 12px; }
+.item-value { margin-left: auto; font-size: 14px; }
+/* Table Styles (Transaksi & Laporan) */
+.p-0 { padding: 0; }
+
+.table-toolbar { 
+    padding: 20px; 
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    gap: 16px; 
+    align-items: center;
+}
+
+/* Toolbar Baru Sesuai Desain 2 */
+.toolbar-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.toolbar-group svg {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    pointer-events: none; /* Agar tidak menghalangi kursor saat mengklik input */
+}
+.toolbar-group input, .toolbar-group select {
+    width: 100%;
+    padding: 10px 12px 10px 38px; /* Memberi ruang untuk ikon di sebelah kiri */
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    color: var(--text-main);
+    font-size: 13px;
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+}
+.toolbar-group input::placeholder {
+    color: var(--text-muted);
+}
+.toolbar-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 30px;
+    cursor: pointer;
+}
+.toolbar-group .chevron-down {
+    left: auto;
+    right: 12px;
+}
+.flex-2 { flex: 2; }
+.flex-1 { flex: 1; }
+
+.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+
+.data-table th { padding: 15px 20px; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); background: #fafafa; }
+.data-table td { padding: 15px 20px; border-bottom: 1px solid var(--border); }
+
+
+.table-footer { padding: 15px 20px; display: flex; justify-content: space-between; font-size: 12px; }
+.pagination button { background: #fff; border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+.pagination button.active { background: var(--primary-light); color: var(--primary-dark); border-color: var(--primary-light); font-weight: bold;}
+
+.badge-green { background: var(--primary-light); color: var(--primary-dark); }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-gray { background: #f3f4f6; color: var(--text-muted); }
+
+.btn-icon { background: transparent; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; margin: 0 4px; transition: color 0.2s; padding: 4px; border-radius: 4px;}
+.btn-icon:hover { background: #f3f4f6; color: var(--text-main); }
+.btn-icon.text-red { color: var(--text-muted); }
+.btn-icon.text-red:hover { background: var(--red-light); color: var(--red); }
+
+/* Inventaris Grid */
+/* Inventaris Grid & Toolbar Baru */
+.inventory-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.search-box {
+    position: relative;
+    width: 320px;
+}
+
+.search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    font-size: 13px;
+    color: var(--text-main);
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.inventory-stats {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.product-card { padding: 16px; border-radius: 12px; }
+.product-img { 
+    background: #f3f4f6; 
+    height: 160px; 
+    border-radius: 8px; 
+    margin-bottom: 16px; 
+    position: relative; 
+    overflow: hidden; /* Pastikan gambar tidak tumpah dari border radius */
+}
+
+/* Badge yang mengapung di atas gambar */
+.img-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.img-badge.badge-red { background: rgba(254, 226, 226, 0.9); color: var(--red); backdrop-filter: blur(2px); }
+.img-badge.badge-gray { background: rgba(243, 244, 246, 0.9); color: var(--text-muted); backdrop-filter: blur(2px); }
+
+.img-placeholder { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; }
+
+.product-info h3 { font-size: 15px; margin: 5px 0; }
+.product-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; }
+
+/* Styling Action Buttons Outline */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.outline-icon {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.outline-icon:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+}
+
+.delete-icon {
+    color: var(--red);
+    border-color: var(--red-light);
+    background: #fffafa;
+}
+
+.delete-icon:hover {
+    background: var(--red-light);
+    border-color: var(--red);
+}
+
+/* Laporan Styles */
+.tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.tab { padding: 10px 0; color: var(--text-muted); font-weight: 500; cursor: pointer; }
+.tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+.report-wrapper { display: flex; justify-content: center; }
+.report-card { width: 100%; max-width: 800px; padding: 40px; }
+.report-header { display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+.report-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 30px; }
+.report-table th { padding: 15px; background: #f9fafb; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+.report-table td { padding: 12px 15px; }
+.group-header { font-weight: 600; font-size: 13px; color: var(--text-main); }
+.indent { padding-left: 30px !important; }
+.text-right { text-align: right; }
+.subtotal { font-weight: 600; border-top: 1px dashed var(--border); border-bottom: 1px solid var(--border); }
+.total-row { font-weight: bold; font-size: 15px; }
+.net-profit-box { background: var(--primary-light); padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; color: var(--primary-dark); }
+.net-profit-box h2 { font-size: 24px; color: var(--primary-dark); }
+
+/* Form Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal-content { background: #fff; padding: 25px; border-radius: 12px; width: 400px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close-btn { font-size: 24px; cursor: pointer; color: var(--text-muted); }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--text-muted); }
+.form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline:none; }
+.form-control:focus { border-color: var(--primary); }
+.w-100 { width: 100%; }
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .dashboard-cards { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid, .bottom-grid { grid-template-columns: 1fr; }
+    .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .sidebar { display: none; }
+    .dashboard-cards { grid-template-columns: 1fr; }
+    .inventory-grid { grid-template-columns: 1fr; }
+}
