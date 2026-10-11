@@ -123,16 +123,7 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
 <head>
     <meta charset="UTF-8">
     <title>Transaksi - uangku.</title>
-    <!-- Cache busting -->
     <link rel="stylesheet" href="style.css?v=<?= time(); ?>">
-    <style>
-        .date-range-container { display: flex; align-items: center; gap: 8px; width: 100%; }
-        .date-range-container input[type="date"] {
-            border: none; background: transparent; color: var(--text-main); font-family: 'Inter', sans-serif;
-            font-size: 13px; width: 100%; padding: 0; outline: none; cursor: pointer;
-        }
-        .date-input-wrapper { position: relative; flex: 1; display: flex; align-items: center; }
-    </style>
 </head>
 <body>
     <div class="app-layout">

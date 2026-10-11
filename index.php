@@ -1,8 +1,6 @@
 <?php include 'koneksi.php'; 
 
-// ==========================================
 // 1. FILTER BULAN AKTIF (DROPDOWN ATAS)
-// ==========================================
 // Ambil semua kombinasi Bulan & Tahun unik dari transaksi
 $q_months = $conn->query("SELECT DISTINCT DATE_FORMAT(tanggal, '%Y-%m') as value, DATE_FORMAT(tanggal, '%M %Y') as label FROM transaksi ORDER BY tanggal DESC");
 $available_months = [];
@@ -23,9 +21,7 @@ if ($filter_bulan != '') {
     $active_m = date('m');
 }
 
-// ==========================================
 // 2. SUMMARY CARDS (Dinamis & Perbandingan Bulan Lalu)
-// ==========================================
 // A. Hitung variabel bulan sebelumnya untuk mencari Tren
 $prev_date = date('Y-m-d', strtotime($active_y . '-' . $active_m . '-01 -1 month'));
 $prev_y = date('Y', strtotime($prev_date));
@@ -89,9 +85,7 @@ function renderTrendBadge($nilai_sekarang, $nilai_lalu, $is_pengeluaran = false)
     return "<span class=\"badge-trend {$css_class}\">{$svg} {$sign}{$format_persen}</span>";
 }
 
-// ==========================================
 // 3. LOGIKA CHART (BATANG & GARIS)
-// ==========================================
 $rentang_waktu = isset($_GET['rentang_waktu']) ? $_GET['rentang_waktu'] : 'mingguan';
 
 $sql_group = "";
@@ -188,9 +182,7 @@ if ($max_line_val > 0) {
     if ($max_bar_val > 1) { $js_max_val = $max_bar_val; }
 }
 
-// ==========================================
 // 4. DONUT CHART (Alokasi Pengeluaran)
-// ==========================================
 $q_donut = $conn->query("SELECT kategori, SUM(jumlah) as total FROM transaksi WHERE tipe = 'Pengeluaran' AND MONTH(tanggal) = '$active_m' AND YEAR(tanggal) = '$active_y' GROUP BY kategori");
 $tot_pengeluaran_chart = 0;
 $donut_data = [];
@@ -218,9 +210,7 @@ if ($tot_pengeluaran_chart > 0) {
     $legend_html = '<li>Belum ada pengeluaran di bulan ini</li>';
 }
 
-// ==========================================
 // 5. PEMASUKAN TERBANYAK & 6. PENGELUARAN TERBANYAK
-// ==========================================
 $q_top_masuk = $conn->query("SELECT * FROM transaksi WHERE tipe='Pemasukan' AND MONTH(tanggal) = '$active_m' AND YEAR(tanggal) = '$active_y' ORDER BY jumlah DESC LIMIT 2");
 $q_top_keluar = $conn->query("SELECT * FROM transaksi WHERE tipe='Pengeluaran' AND MONTH(tanggal) = '$active_m' AND YEAR(tanggal) = '$active_y' ORDER BY jumlah DESC LIMIT 2");
 $jml_keluar_tampil = $q_top_keluar->num_rows;

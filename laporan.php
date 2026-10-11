@@ -38,30 +38,6 @@ $q_beban = $conn->query("SELECT kategori, SUM(jumlah) as total FROM transaksi WH
     <meta charset="UTF-8">
     <title>Laporan - uangku.</title>
     <link rel="stylesheet" href="style.css?v=<?= time(); ?>">
-    <style>
-        /* Styling Khusus Laporan menyesuaikan Gambar */
-        .laporan-card { padding: 40px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border-radius: 16px; background: #fff;}
-        .report-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); font-size: 14px;}
-        .report-row:last-child { border-bottom: none; }
-        .row-text { color: var(--text-muted); }
-        .row-value { color: var(--text-main); font-weight: 500; }
-        
-        .header-laporan { display: flex; justify-content: space-between; padding: 12px 20px; background: #f9fafb; border-radius: 8px; margin-bottom: 24px; font-size: 13px; font-weight: 600; color: var(--text-muted);}
-        
-        .group-title { font-weight: 700; font-size: 15px; color: var(--text-main); margin: 24px 0 8px 0; }
-        .subtotal-row { display: flex; justify-content: space-between; padding: 16px 0; font-weight: 700; font-size: 14px; color: var(--text-main); border-bottom: 1px dashed var(--border);}
-        
-        /* Box Laba Kotor (Hijau Muda) */
-        .laba-kotor-box { background: #f0fdf4; display: flex; justify-content: space-between; padding: 16px 20px; border-radius: 8px; color: #166534; font-weight: 700; font-size: 15px; margin: 24px 0;}
-        
-        /* Box Laba Bersih (Hijau Solid) */
-        .laba-bersih-box { background: #22c55e; display: flex; justify-content: space-between; align-items: center; padding: 24px; border-radius: 12px; color: #fff; margin-top: 32px; box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);}
-        .laba-bersih-box .label { font-weight: 700; font-size: 18px; display: block;}
-        .laba-bersih-box .sub { font-size: 12px; font-weight: 400; opacity: 0.9;}
-        .laba-bersih-box .value { font-size: 26px; font-weight: 700; }
-        
-        .footer-note { font-size: 11px; color: var(--text-muted); margin-top: 24px; line-height: 1.6;}
-    </style>
 </head>
 <body>
     <div class="app-layout">
