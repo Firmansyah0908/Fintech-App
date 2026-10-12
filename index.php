@@ -222,6 +222,8 @@ $jml_keluar_tampil = $q_top_keluar->num_rows;
     <meta charset="UTF-8">
     <title>Dashboard - uangku.</title>
     <link rel="stylesheet" href="style.css?v=<?= time(); ?>">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css"rel="stylesheet"
+/>
 </head>
 <body>
     <div class="app-layout">
