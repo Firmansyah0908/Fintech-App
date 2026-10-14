@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 10, 2026 at 09:59 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Host: 127.0.0.1:3306
+-- Waktu pembuatan: 14 Okt 2026 pada 11.23
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventaris`
+-- Struktur dari tabel `inventaris`
 --
 
 CREATE TABLE `inventaris` (
@@ -36,7 +36,7 @@ CREATE TABLE `inventaris` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `inventaris`
+-- Dumping data untuk tabel `inventaris`
 --
 
 INSERT INTO `inventaris` (`id`, `sku`, `nama_produk`, `harga`, `stok`) VALUES
@@ -46,7 +46,7 @@ INSERT INTO `inventaris` (`id`, `sku`, `nama_produk`, `harga`, `stok`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tagihan`
+-- Struktur dari tabel `tagihan`
 --
 
 CREATE TABLE `tagihan` (
@@ -57,7 +57,7 @@ CREATE TABLE `tagihan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tagihan`
+-- Dumping data untuk tabel `tagihan`
 --
 
 INSERT INTO `tagihan` (`id`, `nama_tagihan`, `tanggal_jatuh_tempo`, `jumlah`) VALUES
@@ -67,7 +67,7 @@ INSERT INTO `tagihan` (`id`, `nama_tagihan`, `tanggal_jatuh_tempo`, `jumlah`) VA
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transaksi`
+-- Struktur dari tabel `transaksi`
 --
 
 CREATE TABLE `transaksi` (
@@ -81,7 +81,7 @@ CREATE TABLE `transaksi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `transaksi`
+-- Dumping data untuk tabel `transaksi`
 --
 
 INSERT INTO `transaksi` (`id`, `tanggal`, `trx_id`, `deskripsi`, `kategori`, `tipe`, `jumlah`) VALUES
@@ -94,49 +94,81 @@ INSERT INTO `transaksi` (`id`, `tanggal`, `trx_id`, `deskripsi`, `kategori`, `ti
 (8, '2026-10-05', 'TRX-819', 'Jual Seblak', 'Penjualan', 'Pemasukan', 1500000.00),
 (9, '2026-10-04', 'TRX-454', 'Jual Freezer', 'Pengembangan', 'Pemasukan', 1500000.00);
 
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `nama_lengkap` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `nama_lengkap`) VALUES
+(1, 'admin', 'admin123', 'Aditya Pratama');
+
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `inventaris`
+-- Indeks untuk tabel `inventaris`
 --
 ALTER TABLE `inventaris`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tagihan`
+-- Indeks untuk tabel `tagihan`
 --
 ALTER TABLE `tagihan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `transaksi`
+-- Indeks untuk tabel `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- Indeks untuk tabel `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `inventaris`
+-- AUTO_INCREMENT untuk tabel `inventaris`
 --
 ALTER TABLE `inventaris`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `tagihan`
+-- AUTO_INCREMENT untuk tabel `tagihan`
 --
 ALTER TABLE `tagihan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `transaksi`
+-- AUTO_INCREMENT untuk tabel `transaksi`
 --
 ALTER TABLE `transaksi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT untuk tabel `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

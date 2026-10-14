@@ -14,7 +14,7 @@
         <div class="user-profile">
             <div class="avatar">AP</div>
             <div class="user-info">
-                <h4>Aditya Pratama</h4>
+                <h4><?= isset($_SESSION['nama_lengkap']) ? htmlspecialchars($_SESSION['nama_lengkap']) : 'Aditya Pratama' ?></h4>
                 <p>Pemilik bisnis</p>
             </div>
             <!-- Icon Panah Bawah SVG -->
@@ -22,5 +22,7 @@
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         </div>
+        <!-- Tambahan Tombol Logout Sederhana -->
+        <a href="logout.php" style="margin-left: 16px; color: var(--red); font-size: 13px; text-decoration: none; font-weight: 500;">Logout</a>
     </div>
 </header>
