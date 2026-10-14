@@ -1,4 +1,7 @@
 <?php
+// Mulai sesi di baris paling atas
+session_start();
+
 $host = "localhost";
 $user = "root";
 $pass = "";
@@ -7,6 +10,13 @@ $db   = "uangku_db";
 $conn = new mysqli($host, $user, $pass, $db);
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
+}
+
+
+// Jika user belum login dan bukan sedang berada di halaman login.php
+if (!isset($_SESSION['user_id']) && basename($_SERVER['PHP_SELF']) != 'login.php') {
+    header("Location: login.php");
+    exit;
 }
 
 function formatRupiah($angka){
