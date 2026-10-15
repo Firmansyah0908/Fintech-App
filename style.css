@@ -56,7 +56,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 18px 48px; /* Padding atas-bawah 18px, kiri-kanan 48px */
+  padding: 18px 48px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -149,6 +149,7 @@ body {
   gap: 8px;
   flex: 1;
 }
+
 .menu a {
   text-decoration: none;
   color: var(--text-muted);
@@ -161,13 +162,24 @@ body {
   font-size: 15px;
   transition: 0.2s;
 }
-.menu a svg {
+
+/* Warna ikon default (saat menu nonaktif) */
+.menu a i {
+  font-size: 20px;
   color: var(--text-muted);
+  transition: color 0.2s;
 }
+
 .menu a:hover {
   background: var(--bg-main);
   color: var(--text-main);
 }
+
+.menu a:hover i {
+  color: var(--text-main);
+}
+
+/* Saat menu aktif (background hijau) */
 .menu a.active {
   background: var(--primary);
   color: #fff;
@@ -175,11 +187,19 @@ body {
     0 4px 6px -1px rgba(16, 185, 129, 0.2),
     0 2px 4px -1px rgba(16, 185, 129, 0.06);
 }
-.menu a.active svg {
+
+/* Warna ikon otomatis berubah menjadi putih saat menu aktif */
+.menu a.active i {
   color: #fff;
 }
 
-/* Menyesuaikan warna badge notifikasi di sidebar menjadi merah muda (seperti gambar referensi) */
+/* Style tambahan untuk ikon di workspace-card */
+.ws-icon i, .ws-arrow i {
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+/* Menyesuaikan warna badge notifikasi di sidebar */
 .badge {
   background: var(--red-light);
   color: var(--red);
@@ -198,7 +218,7 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 32px; /* Diperbesar agar jarak tanggal, lonceng, dan profil lebih lega */
+  gap: 32px;
 }
 
 .date {
@@ -220,7 +240,7 @@ body {
   gap: 12px;
   cursor: pointer;
   border-left: 1px solid var(--border);
-  padding-left: 32px; /* Jarak dari garis vertikal ke Avatar diperbesar */
+  padding-left: 32px;
   height: 40px;
 }
 
@@ -366,7 +386,7 @@ body {
   padding: 24px;
 }
 
-/* Penyesuaian List Item agar lebih mirip desain */
+/* Penyesuaian List Item */
 .list-item {
   display: flex;
   align-items: center;
@@ -404,15 +424,14 @@ body {
 }
 
 /* Custom Dropdown Bulan Styling */
-/* Custom Dropdown Bulan Styling */
 .custom-select-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
   background: #ffffff;
-  border: 1px solid #d1d5db; /* Border abu-abu tegas */
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 6px 36px 6px 36px; /* Ruang untuk ikon kiri dan kanan */
+  padding: 6px 36px 6px 36px;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   height: 38px;
@@ -532,14 +551,14 @@ body {
 
 .charts-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr; /* Membagi Grafik Arus Kas lebih lebar dari Tren Saldo */
+  grid-template-columns: 1.2fr 1fr;
   gap: 24px;
   margin-bottom: 24px;
 }
 
 .bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Membagi Donut Chart dan List sejajar */
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
@@ -662,11 +681,6 @@ body {
   position: relative;
 }
 
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
 /* CSS Conic Donut Chart */
 .donut-container {
   display: flex;
@@ -717,36 +731,7 @@ body {
   border-bottom: none;
 }
 
-/* Lists (Produk & Tagihan) */
-.list-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.item-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  margin-right: 15px;
-}
-.item-info h4 {
-  font-size: 14px;
-  margin-bottom: 3px;
-  color: var(--text-main);
-}
-.item-info span {
-  font-size: 12px;
-}
-.item-value {
-  margin-left: auto;
-  font-size: 14px;
-}
-/* Table Styles (Transaksi & Laporan) */
+/* Table Styles */
 .p-0 {
   padding: 0;
 }
@@ -759,7 +744,6 @@ body {
   align-items: center;
 }
 
-/* Toolbar Baru Sesuai Desain 2 */
 .toolbar-group {
   position: relative;
   display: flex;
@@ -940,7 +924,6 @@ body {
   overflow: hidden;
 }
 
-/* Badge yang mengapung di atas gambar */
 .img-badge {
   position: absolute;
   top: 10px;
@@ -983,7 +966,6 @@ body {
   margin-top: 12px;
 }
 
-/* Styling Action Buttons Outline */
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -1155,7 +1137,6 @@ body {
   width: 100%;
 }
 
-/* Styling Khusus Laporan menyesuaikan Gambar */
 .laporan-card {
   padding: 40px;
   border: none;
@@ -1209,7 +1190,6 @@ body {
   border-bottom: 1px dashed var(--border);
 }
 
-/* Box Laba Kotor (Hijau Muda) */
 .laba-kotor-box {
   background: #f0fdf4;
   display: flex;
@@ -1222,7 +1202,6 @@ body {
   margin: 24px 0;
 }
 
-/* Box Laba Bersih (Hijau Solid) */
 .laba-bersih-box {
   background: #22c55e;
   display: flex;
