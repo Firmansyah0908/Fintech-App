@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 :root {
   --primary: #10b981;
@@ -19,7 +19,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 body {
   background-color: var(--bg-main);
@@ -27,7 +27,7 @@ body {
   font-size: 14px;
 }
 
-/* Layout Grid/Flex */
+/* Layout Grid / Flex */
 .app-layout {
   display: flex;
   height: 100vh;
@@ -765,7 +765,7 @@ body {
   color: var(--text-main);
   font-size: 13px;
   background: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 .toolbar-group input::placeholder {
   color: var(--text-muted);
@@ -892,7 +892,7 @@ body {
   font-size: 13px;
   color: var(--text-main);
   background: #fff;
-  font-family: "Inter", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .search-box input::placeholder {
@@ -1245,7 +1245,7 @@ body {
   border: none;
   background: transparent;
   color: var(--text-main);
-  font-family: "Inter", sans-serif;
+  font-family: "Manrope", sans-serif;
   font-size: 13px;
   width: 100%;
   padding: 0;

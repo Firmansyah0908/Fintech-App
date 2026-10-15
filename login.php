@@ -1,7 +1,6 @@
 <?php
-include 'koneksi.php'; // Otomatis menjalankan session_start()
+include 'koneksi.php';
 
-// Jika sudah login, langsung ke Dashboard
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
@@ -9,19 +8,12 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    // Cari user menggunakan prepared statement agar aman dari SQL Injection
-    $stmt = $conn->prepare("SELECT id, nama_lengkap, password FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        // Cek password murni (tanpa enkripsi)
-        if ($password === $row['password']) {
-            // Berhasil login, simpan data ke sesi
+    $q = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username'");
+    if ($row = mysqli_fetch_assoc($q)) {
+        if ($password == $row['password']) {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['nama_lengkap'] = $row['nama_lengkap'];
             header("Location: index.php");
@@ -39,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Login - Fintech App</title>
-    <link rel="stylesheet" href="style.css?v=<?= time(); ?>">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="login-body">
     <div class="login-container">
@@ -50,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p class="text-muted">Silakan masuk ke akun Fintech Anda</p>
             </div>
             
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+            <?php if ($error != ''): ?>
+                <div class="alert alert-danger"><?= $error ?></div>
             <?php endif; ?>
 
             <form method="POST" action="login.php">
