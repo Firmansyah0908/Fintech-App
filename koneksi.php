@@ -1,33 +1,31 @@
 <?php
-// Mulai sesi di baris paling atas
-session_start();
-
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "uangku_db";
-
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+$conn = mysqli_connect("localhost", "root", "", "uangku_db");
+if (!$conn) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
 
-// Jika user belum login dan bukan sedang berada di halaman login.php
+// Cek login (kecuali sedang di halaman login.php)
 if (!isset($_SESSION['user_id']) && basename($_SERVER['PHP_SELF']) != 'login.php') {
     header("Location: login.php");
     exit;
 }
 
-function formatRupiah($angka){
-    return "Rp " . number_format($angka, 0, ',', '.');
+if (!function_exists('formatRupiah')) {
+    function formatRupiah($angka) {
+        return "Rp " . number_format((float)$angka, 0, ',', '.');
+    }
 }
 
-// Helper Tanggal Indonesia Dinamis
-function tanggalIndo($tanggal) {
-    $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    $bulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    $timestamp = strtotime($tanggal);
-    return $hari[date('w', $timestamp)] . ', ' . date('d', $timestamp) . ' ' . $bulan[date('n', $timestamp)] . ' ' . date('Y', $timestamp);
+if (!function_exists('tanggalIndo')) {
+    function tanggalIndo($tanggal) {
+        $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $bulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $ts = strtotime($tanggal);
+        return $hari[date('w', $ts)] . ', ' . date('d', $ts) . ' ' . $bulan[date('n', $ts)] . ' ' . date('Y', $ts);
+    }
 }
 ?>

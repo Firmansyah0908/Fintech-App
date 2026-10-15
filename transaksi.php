@@ -1,121 +1,67 @@
-<?php include 'koneksi.php'; 
+<?php 
+include 'koneksi.php'; 
 
-// ==========================================
-// PROSES CRUD (CREATE, UPDATE, DELETE)
-// ==========================================
+// PROSES CRUD SEDERHANA
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // 1. TAMBAH TRANSAKSI
     if (isset($_POST['simpan_trx'])) {
-        $tgl = $_POST['tanggal'];
-        $trx = "TRX-" . rand(100, 999);
-        $desc = $_POST['deskripsi'];
-        $kat = $_POST['kategori'];
+        $tgl  = $_POST['tanggal'];
+        $trx  = "TRX-" . rand(100, 999);
+        $desc = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+        $kat  = mysqli_real_escape_string($conn, $_POST['kategori']);
         $tipe = $_POST['tipe'];
-        $jml = $_POST['jumlah'];
+        $jml  = $_POST['jumlah'];
 
-        $stmt = $conn->prepare("INSERT INTO transaksi (tanggal, trx_id, deskripsi, kategori, tipe, jumlah) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssd", $tgl, $trx, $desc, $kat, $tipe, $jml);
-        $stmt->execute();
-        $stmt->close();
+        mysqli_query($conn, "INSERT INTO transaksi (tanggal, trx_id, deskripsi, kategori, tipe, jumlah) VALUES ('$tgl', '$trx', '$desc', '$kat', '$tipe', '$jml')");
         header("Location: transaksi.php");
         exit;
     }
     
-    // 2. EDIT TRANSAKSI
     if (isset($_POST['edit_trx'])) {
-        $id = $_POST['edit_id'];
-        $tgl = $_POST['tanggal'];
-        $desc = $_POST['deskripsi'];
-        $kat = $_POST['kategori'];
+        $id   = $_POST['edit_id'];
+        $tgl  = $_POST['tanggal'];
+        $desc = mysqli_real_escape_string($conn, $_POST['deskripsi']);
+        $kat  = mysqli_real_escape_string($conn, $_POST['kategori']);
         $tipe = $_POST['tipe'];
-        $jml = $_POST['jumlah'];
+        $jml  = $_POST['jumlah'];
 
-        $stmt = $conn->prepare("UPDATE transaksi SET tanggal=?, deskripsi=?, kategori=?, tipe=?, jumlah=? WHERE id=?");
-        $stmt->bind_param("ssssdi", $tgl, $desc, $kat, $tipe, $jml, $id);
-        $stmt->execute();
-        $stmt->close();
+        mysqli_query($conn, "UPDATE transaksi SET tanggal='$tgl', deskripsi='$desc', kategori='$kat', tipe='$tipe', jumlah='$jml' WHERE id='$id'");
         header("Location: transaksi.php");
         exit;
     }
     
-    // 3. HAPUS TRANSAKSI
     if (isset($_POST['hapus_trx'])) {
         $id = $_POST['id_hapus'];
-        $stmt = $conn->prepare("DELETE FROM transaksi WHERE id=?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->close();
+        mysqli_query($conn, "DELETE FROM transaksi WHERE id='$id'");
         header("Location: transaksi.php");
         exit;
     }
 }
 
-// ==========================================
-// AMBIL DATA & REKAP BULANAN
-// ==========================================
-$q_latest = $conn->query("SELECT MAX(tanggal) as max_date FROM transaksi");
-$row_latest = $q_latest->fetch_assoc();
+// FILTER PENCARIAN SEDERHANA
+$search     = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$kategori   = isset($_GET['kategori']) ? mysqli_real_escape_string($conn, $_GET['kategori']) : '';
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
+$end_date   = isset($_GET['end_date']) ? $_GET['end_date'] : '';
 
-if ($row_latest['max_date'] != null) {
-    $latest_date = $row_latest['max_date'];
-} else {
-    $latest_date = date('Y-m-d');
-}
+$where = "WHERE 1=1";
+if ($search != '')     $where .= " AND (trx_id LIKE '%$search%' OR deskripsi LIKE '%$search%')";
+if ($kategori != '')   $where .= " AND kategori = '$kategori'";
+if ($start_date != '') $where .= " AND tanggal >= '$start_date'";
+if ($end_date != '')   $where .= " AND tanggal <= '$end_date'";
 
-$active_m = date('m', strtotime($latest_date));
-$active_y = date('Y', strtotime($latest_date));
+$q_kategori_list = mysqli_query($conn, "SELECT DISTINCT kategori FROM transaksi ORDER BY kategori ASC");
+$q_transaksi     = mysqli_query($conn, "SELECT * FROM transaksi $where ORDER BY tanggal DESC");
+$total_trx       = mysqli_num_rows($q_transaksi);
 
-// ==========================================
-// FILTER PENCARIAN, TANGGAL & KATEGORI
-// ==========================================
-$search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-$filter_kategori = isset($_GET['kategori']) ? $conn->real_escape_string($_GET['kategori']) : '';
-$start_date = isset($_GET['start_date']) ? $conn->real_escape_string($_GET['start_date']) : '';
-$end_date = isset($_GET['end_date']) ? $conn->real_escape_string($_GET['end_date']) : '';
-
-// Ambil daftar kategori unik untuk dropdown filter
-$q_kategori_list = $conn->query("SELECT DISTINCT kategori FROM transaksi ORDER BY kategori ASC");
-$kategori_options = [];
-while ($row = $q_kategori_list->fetch_assoc()) {
-    $kategori_options[] = $row['kategori'];
-}
-
-// Susun kondisi WHERE dinamis
-$where_clauses = [];
-if (!empty($search_query)) {
-    $where_clauses[] = "(trx_id LIKE '%$search_query%' OR deskripsi LIKE '%$search_query%')";
-}
-if (!empty($filter_kategori)) {
-    $where_clauses[] = "kategori = '$filter_kategori'";
-}
-if (!empty($start_date)) {
-    $where_clauses[] = "tanggal >= '$start_date'";
-}
-if (!empty($end_date)) {
-    $where_clauses[] = "tanggal <= '$end_date'";
-}
-
-$where_sql = "";
-if (count($where_clauses) > 0) {
-    $where_sql = "WHERE " . implode(" AND ", $where_clauses);
-}
-
-// Jalankan query transaksi dengan filter
-$q_transaksi = $conn->query("SELECT * FROM transaksi $where_sql ORDER BY tanggal DESC");
-$total_trx_tampil = $q_transaksi->num_rows;
-
-// Rekap angka hanya menghitung data yang tampil di tabel (Ter-filter)
-$q_total_filtered = $conn->query("
-    SELECT 
-        SUM(CASE WHEN tipe='Pemasukan' THEN jumlah ELSE 0 END) as total_masuk,
-        SUM(CASE WHEN tipe='Pengeluaran' THEN jumlah ELSE 0 END) as total_keluar
-    FROM transaksi 
-    $where_sql
+// Hitung total pemasukan & pengeluaran dari hasil filter
+$q_rekap = mysqli_query($conn, "
+    SELECT SUM(IF(tipe='Pemasukan', jumlah, 0)) as masuk,
+           SUM(IF(tipe='Pengeluaran', jumlah, 0)) as keluar
+    FROM transaksi $where
 ");
-$data_total = $q_total_filtered->fetch_assoc();
-
-$total_masuk_tampil = $data_total['total_masuk'] != null ? $data_total['total_masuk'] : 0;
-$total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_keluar'] : 0;
+$rekap = mysqli_fetch_assoc($q_rekap);
+$total_masuk  = $rekap['masuk'] ?? 0;
+$total_keluar = $rekap['keluar'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -123,7 +69,7 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
 <head>
     <meta charset="UTF-8">
     <title>Transaksi - uangku.</title>
-    <link rel="stylesheet" href="style.css?v=<?= time(); ?>">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-layout">
@@ -137,116 +83,94 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
                         <h1>Transaksi</h1>
                         <p class="text-muted">Kelola dan pantau setiap pemasukan serta pengeluaran bisnis Anda.</p>
                     </div>
-                    <button class="btn-primary" onclick="document.getElementById('modalTrx').style.display='flex'">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px; vertical-align:middle;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        Add Transaction
-                    </button>
+                    <button class="btn-primary" onclick="document.getElementById('modalTrx').style.display='flex'">+ Add Transaction</button>
                 </div>
 
                 <div class="trx-summary" style="margin-bottom:24px; display:flex; gap:24px; align-items: center; font-size: 14px;">
-                    <div><span class="dot bg-green"></span> Total pemasukan <strong style="color:var(--text-main);">Rp <?= number_format($total_masuk_tampil, 0, ',', '.') ?></strong></div>
-                    <div><span class="dot bg-red"></span> Total pengeluaran <strong style="color:var(--text-main);">Rp <?= number_format($total_keluar_tampil, 0, ',', '.') ?></strong></div>
+                    <div><span class="dot bg-green"></span> Total pemasukan <strong><?= formatRupiah($total_masuk) ?></strong></div>
+                    <div><span class="dot bg-red"></span> Total pengeluaran <strong><?= formatRupiah($total_keluar) ?></strong></div>
                 </div>
 
                 <div class="card p-0">
                     <form method="GET" action="transaksi.php" id="filterForm">
-                        <div class="table-toolbar" style="border-bottom: 1px solid var(--border);">
-                            <!-- Search -->
+                        <div class="table-toolbar">
                             <div class="toolbar-group flex-2">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                <input type="text" name="search" placeholder="Cari transaksi atau ID..." class="input-search" value="<?= htmlspecialchars($search_query) ?>">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input type="text" name="search" placeholder="Cari transaksi atau ID..." value="<?= htmlspecialchars($search) ?>" onchange="this.form.submit()">
                             </div>
                             
-                            <!-- Date Range -->
-                            <div class="toolbar-group flex-1" style="padding: 10px 12px 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff;">
+                            <div class="toolbar-group flex-1" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff;">
                                 <div class="date-range-container">
                                     <div class="date-input-wrapper">
-                                        <input type="date" name="start_date" value="<?= htmlspecialchars($start_date) ?>" onchange="document.getElementById('filterForm').submit();" title="Dari Tanggal">
+                                        <input type="date" name="start_date" value="<?= $start_date ?>" onchange="this.form.submit()">
                                     </div>
                                     <span class="text-muted">—</span>
                                     <div class="date-input-wrapper">
-                                        <input type="date" name="end_date" value="<?= htmlspecialchars($end_date) ?>" onchange="document.getElementById('filterForm').submit();" title="Sampai Tanggal">
+                                        <input type="date" name="end_date" value="<?= $end_date ?>" onchange="this.form.submit()">
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Category Select (Filter Toolbar) -->
                             <div class="toolbar-group flex-1">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                                <select name="kategori" class="input-search" onchange="document.getElementById('filterForm').submit();">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                                <select name="kategori" onchange="this.form.submit()">
                                     <option value="">Semua kategori</option>
-                                    <?php foreach ($kategori_options as $kat) { 
-                                        $selected = ($kat === $filter_kategori) ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= htmlspecialchars($kat) ?>" <?= $selected ?>><?= htmlspecialchars($kat) ?></option>
-                                    <?php } ?>
+                                    <?php while ($k = mysqli_fetch_assoc($q_kategori_list)): ?>
+                                        <option value="<?= htmlspecialchars($k['kategori']) ?>" <?= $k['kategori'] == $kategori ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($k['kategori']) ?>
+                                        </option>
+                                    <?php endwhile; ?>
                                 </select>
-                                <svg class="chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                             </div>
                         </div>
-                        <input type="submit" style="display: none;" />
                     </form>
                     
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th style="width: 13%;">Date</th>
-                                <th style="width: 15%;">Transaction ID</th>
-                                <th style="width: 27%;">Description</th>
-                                <th style="width: 17%;">Category</th>
-                                <th style="width: 10%;">Type</th>
-                                <th style="text-align:right; width: 12%;">Amount</th>
-                                <th style="text-align:center; width: 6%;">Action</th>
+                                <th>Date</th>
+                                <th>Transaction ID</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th style="text-align:right;">Amount</th>
+                                <th style="text-align:center;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            if ($total_trx_tampil > 0) {
-                                while($row = $q_transaksi->fetch_assoc()) {
-                                    $dateObj = date_create($row['tanggal']);
-                                    $dateStr = date_format($dateObj, "d M Y");
-                                    
-                                    if ($row['tipe'] == 'Pemasukan') {
-                                        $amountClass = 'text-green';
-                                        $amountSign  = '+ ';
-                                        $badgeClass  = 'badge-green';
-                                        $arrow       = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>';
-                                    } else {
-                                        $amountClass = 'text-red';
-                                        $amountSign  = '- ';
-                                        $badgeClass  = 'badge-red';
-                                        $arrow       = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px; vertical-align:text-bottom;"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>';
-                                    }
-                            ?>
-                            <tr>
-                                <td><span class="text-muted"><?= $dateStr ?></span></td>
-                                <td><span class="text-muted"><?= $row['trx_id'] ?></span></td>
-                                <td><strong style="color:var(--text-main); font-weight: 600;"><?= htmlspecialchars($row['deskripsi']) ?></strong></td>
-                                <td style="white-space: nowrap;"><span class="text-muted"><?= htmlspecialchars($row['kategori']) ?></span></td>
-                                <td><span class="badge <?= $badgeClass ?>"><?= $arrow ?> <?= $row['tipe'] ?></span></td>
-                                <td style="text-align:right"><strong class="<?= $amountClass ?>"><?= $amountSign ?>Rp <?= number_format($row['jumlah'], 0, ',', '.') ?></strong></td>
-                                <td style="text-align:center">
-                                    <button type="button" class="btn-icon" title="Edit" onclick="openEditModal('<?= $row['id'] ?>', '<?= $row['tanggal'] ?>', '<?= htmlspecialchars($row['deskripsi'], ENT_QUOTES) ?>', '<?= htmlspecialchars($row['kategori'], ENT_QUOTES) ?>', '<?= $row['tipe'] ?>', '<?= $row['jumlah'] ?>')">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                                    </button>
-                                    <form method="POST" action="" style="display:inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus transaksi ini?');">
-                                        <input type="hidden" name="id_hapus" value="<?= $row['id'] ?>">
-                                        <button type="submit" name="hapus_trx" class="btn-icon text-red" title="Hapus">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <?php if ($total_trx > 0): ?>
+                                <?php while ($row = mysqli_fetch_assoc($q_transaksi)): 
+                                    $isMasuk = $row['tipe'] == 'Pemasukan';
+                                ?>
+                                <tr>
+                                    <td class="text-muted"><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
+                                    <td class="text-muted"><?= $row['trx_id'] ?></td>
+                                    <td><strong><?= htmlspecialchars($row['deskripsi']) ?></strong></td>
+                                    <td class="text-muted"><?= htmlspecialchars($row['kategori']) ?></td>
+                                    <td><span class="badge <?= $isMasuk ? 'badge-green' : 'badge-red' ?>"><?= $row['tipe'] ?></span></td>
+                                    <td style="text-align:right">
+                                        <strong class="<?= $isMasuk ? 'text-green' : 'text-red' ?>">
+                                            <?= ($isMasuk ? '+ ' : '- ') . formatRupiah($row['jumlah']) ?>
+                                        </strong>
+                                    </td>
+                                    <td style="text-align:center">
+                                        <button type="button" class="btn-icon" onclick="openEditModal('<?= $row['id'] ?>', '<?= $row['tanggal'] ?>', '<?= htmlspecialchars($row['deskripsi'], ENT_QUOTES) ?>', '<?= htmlspecialchars($row['kategori'], ENT_QUOTES) ?>', '<?= $row['tipe'] ?>', '<?= $row['jumlah'] ?>')">
+                                            <i class="ri-edit-line"></i>
                                         </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <?php 
-                                } 
-                            } else {
-                                echo "<tr><td colspan='7' style='text-align:center; padding: 30px;' class='text-muted'>Tidak ada transaksi ditemukan pada filter tersebut.</td></tr>";
-                            }
-                            ?>
+                                        <form method="POST" action="" style="display:inline;" onsubmit="return confirm('Hapus transaksi ini?');">
+                                            <input type="hidden" name="id_hapus" value="<?= $row['id'] ?>">
+                                            <button type="submit" name="hapus_trx" class="btn-icon text-red"><i class="ri-delete-bin-line"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr><td colspan="7" style="text-align:center; padding: 30px;" class="text-muted">Tidak ada transaksi ditemukan.</td></tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                     <div class="table-footer">
-                        <span class="text-muted">Menampilkan <?= $total_trx_tampil ?> transaksi</span>
+                        <span class="text-muted">Menampilkan <?= $total_trx ?> transaksi</span>
                         <div class="pagination"><button class="active">1</button></div>
                     </div>
                 </div>
@@ -264,17 +188,16 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
             <form method="POST" action="transaksi.php">
                 <div class="form-group"><label>Tanggal</label><input type="date" name="tanggal" required class="form-control"></div>
                 <div class="form-group"><label>Deskripsi</label><input type="text" name="deskripsi" required class="form-control"></div>
-                
-                <!-- Kategori yang Dikunci untuk Laporan Laba Rugi -->
                 <div class="form-group">
-                    <label>Kategori (Pilih sesuai Laporan)</label>
+                    <label>Kategori</label>
                     <select name="kategori" required class="form-control">
                         <optgroup label="Pendapatan">
+                            <option value="Penjualan">Penjualan</option>
                             <option value="Penjualan Offline">Penjualan Offline</option>
                             <option value="Penjualan Online">Penjualan Online</option>
                             <option value="Pendapatan Lain">Pendapatan Lain</option>
                         </optgroup>
-                        <optgroup label="Harga Pokok Penjualan (HPP)">
+                        <optgroup label="HPP">
                             <option value="Bahan Baku">Bahan Baku</option>
                             <option value="Kemasan">Kemasan</option>
                         </optgroup>
@@ -286,7 +209,6 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
                         </optgroup>
                     </select>
                 </div>
-                
                 <div class="form-group"><label>Tipe</label>
                     <select name="tipe" class="form-control">
                         <option value="Pemasukan">Pemasukan</option>
@@ -310,29 +232,21 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
                 <input type="hidden" name="edit_id" id="edit_id">
                 <div class="form-group"><label>Tanggal</label><input type="date" name="tanggal" id="edit_tanggal" required class="form-control"></div>
                 <div class="form-group"><label>Deskripsi</label><input type="text" name="deskripsi" id="edit_deskripsi" required class="form-control"></div>
-                
-                <!-- Kategori yang Dikunci untuk Laporan Laba Rugi -->
                 <div class="form-group">
-                    <label>Kategori (Pilih sesuai Laporan)</label>
+                    <label>Kategori</label>
                     <select name="kategori" id="edit_kategori" required class="form-control">
-                        <optgroup label="Pendapatan">
-                            <option value="Penjualan Offline">Penjualan Offline</option>
-                            <option value="Penjualan Online">Penjualan Online</option>
-                            <option value="Pendapatan Lain">Pendapatan Lain</option>
-                        </optgroup>
-                        <optgroup label="Harga Pokok Penjualan (HPP)">
-                            <option value="Bahan Baku">Bahan Baku</option>
-                            <option value="Kemasan">Kemasan</option>
-                        </optgroup>
-                        <optgroup label="Beban Operasional">
-                            <option value="Gaji">Gaji</option>
-                            <option value="Sewa & Listrik">Sewa & Listrik</option>
-                            <option value="Pemasaran">Pemasaran</option>
-                            <option value="Beban Lainnya">Beban Lainnya</option>
-                        </optgroup>
+                        <option value="Penjualan">Penjualan</option>
+                        <option value="Penjualan Offline">Penjualan Offline</option>
+                        <option value="Penjualan Online">Penjualan Online</option>
+                        <option value="Pendapatan Lain">Pendapatan Lain</option>
+                        <option value="Bahan Baku">Bahan Baku</option>
+                        <option value="Kemasan">Kemasan</option>
+                        <option value="Gaji">Gaji</option>
+                        <option value="Sewa & Listrik">Sewa & Listrik</option>
+                        <option value="Pemasaran">Pemasaran</option>
+                        <option value="Beban Lainnya">Beban Lainnya</option>
                     </select>
                 </div>
-                
                 <div class="form-group"><label>Tipe</label>
                     <select name="tipe" id="edit_tipe" class="form-control">
                         <option value="Pemasukan">Pemasukan</option>
@@ -350,30 +264,10 @@ $total_keluar_tampil = $data_total['total_keluar'] != null ? $data_total['total_
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_tanggal').value = tanggal;
             document.getElementById('edit_deskripsi').value = deskripsi;
-            
-            // Validasi: Jika kategori dari database lawas tidak ada di select list baru, 
-            // biarkan user memilih ulang. Jika ada, set otomatis.
-            let selectKat = document.getElementById('edit_kategori');
-            let optionExists = Array.from(selectKat.options).some(opt => opt.value === kategori);
-            if (optionExists) {
-                selectKat.value = kategori;
-            } else {
-                selectKat.selectedIndex = 0; // Reset jika tidak match
-            }
-
+            document.getElementById('edit_kategori').value = kategori;
             document.getElementById('edit_tipe').value = tipe;
             document.getElementById('edit_jumlah').value = jumlah;
             document.getElementById('modalEditTrx').style.display = 'flex';
-        }
-
-        const searchInput = document.querySelector('input[name="search"]');
-        if (searchInput) {
-            searchInput.addEventListener("keypress", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    document.getElementById("filterForm").submit();
-                }
-            });
         }
     </script>
 </body>

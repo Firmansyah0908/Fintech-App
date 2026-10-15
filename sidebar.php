@@ -1,30 +1,12 @@
 <?php 
-$current_page = basename($_SERVER['PHP_SELF']); 
+include 'koneksi.php';
 
-$q_badge = $conn->query("SELECT COUNT(*) as low_stock FROM inventaris WHERE stok < 10");
-$low_stock_count = $q_badge->fetch_assoc()['low_stock'];
+$page = basename($_SERVER['PHP_SELF']); 
 
-// Logika if-else untuk menu aktif
-$active_index = "";
-$active_transaksi = "";
-$active_inventaris = "";
-$active_laporan = "";
-
-if ($current_page == 'index.php') {
-    $active_index = "active";
-}
-if ($current_page == 'transaksi.php') {
-    $active_transaksi = "active";
-}
-if ($current_page == 'inventaris.php') {
-    $active_inventaris = "active";
-}
-if ($current_page == 'laporan.php') {
-    $active_laporan = "active";
-}
+$q_badge = mysqli_query($conn, "SELECT COUNT(*) as low_stock FROM inventaris WHERE stok < 10");
+$row_badge = mysqli_fetch_assoc($q_badge);
+$low_stock_count = $row_badge['low_stock'];
 ?>
-
-<!-- CDN RemixIcon agar ikon selalu termuat di semua halaman -->
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet">
 
 <aside class="sidebar">
@@ -33,37 +15,29 @@ if ($current_page == 'laporan.php') {
         <h2>Fintech.</h2>
     </div>
     <div class="workspace-card">
-        <div class="ws-icon">
-            <i class="ri-store-2-line"></i>
-        </div>
+        <div class="ws-icon"><i class="ri-store-2-line"></i></div>
         <div class="ws-info">
             <h4>Kopi Senja</h4>
             <p>Workspace bisnis</p>
         </div>
-        <div class="ws-arrow">
-            <i class="ri-arrow-down-s-line"></i>
-        </div>
+        <div class="ws-arrow"><i class="ri-arrow-down-s-line"></i></div>
     </div>
     <p class="menu-label">MENU UTAMA</p>
     <nav class="menu">
-        <a href="index.php" class="<?= $active_index ?>">
-            <i class="ri-dashboard-line"></i>
-            Dashboard
+        <a href="index.php" class="<?= $page == 'index.php' ? 'active' : '' ?>">
+            <i class="ri-dashboard-line"></i> Dashboard
         </a>
-        <a href="transaksi.php" class="<?= $active_transaksi ?>">
-            <i class="ri-exchange-dollar-line"></i>
-            Transaksi
+        <a href="transaksi.php" class="<?= $page == 'transaksi.php' ? 'active' : '' ?>">
+            <i class="ri-exchange-dollar-line"></i> Transaksi
         </a>
-        <a href="inventaris.php" class="<?= $active_inventaris ?>">
-            <i class="ri-box-3-line"></i>
-            Inventaris
-            <?php if ($low_stock_count > 0) { ?>
+        <a href="inventaris.php" class="<?= $page == 'inventaris.php' ? 'active' : '' ?>">
+            <i class="ri-box-3-line"></i> Inventaris
+            <?php if ($low_stock_count > 0): ?>
                 <span class="badge"><?= $low_stock_count ?></span>
-            <?php } ?>
+            <?php endif; ?>
         </a>
-        <a href="laporan.php" class="<?= $active_laporan ?>">
-            <i class="ri-file-text-line"></i>
-            Laporan
+        <a href="laporan.php" class="<?= $page == 'laporan.php' ? 'active' : '' ?>">
+            <i class="ri-file-text-line"></i> Laporan
         </a>
     </nav>
 </aside>
